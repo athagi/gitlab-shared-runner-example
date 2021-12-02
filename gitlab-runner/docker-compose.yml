@@ -1,0 +1,8 @@
+gitlab-ci:
+  image: 'gitlab/gitlab-runner:latest'
+  restart: always
+  network_mode: "host"
+  volumes:
+    - './config:/etc/gitlab-runner'
+    - '/var/run/docker.sock:/var/run/docker.sock'
+    # - '/usr/bin/docker-credential-ecr-login:/usr/bin/docker-credential-ecr-login'

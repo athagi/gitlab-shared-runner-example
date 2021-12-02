@@ -1,0 +1,25 @@
+echo:
+  stage: build
+  image: busybox:latest
+  script:
+    - echo "hello world"
+
+dockerBuild:
+  stage: build
+  image: public.ecr.aws/docker/library/docker:20.10.10
+  before_script:
+    - apk add --no-cache python3 py3-pip && pip3 install --upgrade pip && pip3 install awscli
+    - aws --version
+  script:
+    - aws ecr get-login-password | docker login --username AWS --password-stdin https://${ECR_URL}
+    - docker build -t ${ECR_URL}/myapp:${CI_COMMIT_SHORT_SHA} .
+    - docker images
+    - docker push ${ECR_URL}/myapp:${CI_COMMIT_SHORT_SHA}
+  variables:
+    ECR_URL: {{AWS_ACCOUNT_ID}}.dkr.ecr.ap-northeast-1.amazonaws.com
+    
+dockerPull:
+  stage: build
+  image: {{AWS_ACCOUNT_ID}}.dkr.ecr.ap-northeast-1.amazonaws.com/myapp:latest
+  script:
+    echo "docker pull is succeeded!"
